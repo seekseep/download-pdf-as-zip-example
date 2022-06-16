@@ -1,14 +1,11 @@
 import JSZip from "jszip";
-import { saveAs } from "file-saver";
 
-export async function downloadPdfFiles (zipFileName, pdfFiles) {
+export async function zipFiles (files, type = 'blob') {
   const zip = new JSZip()
 
-  pdfFiles.forEach(({ name, data }) => zip.file(name, data))
+  files.forEach(({ name, data }) => zip.file(name, data))
 
-  const content = await zip.generateAsync({
-    type: "blob"
-  })
+  const content = await zip.generateAsync({ type })
 
-  saveAs(content, zipFileName)
+  return content
 }

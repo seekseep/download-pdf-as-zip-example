@@ -6,14 +6,16 @@ import {
   getPaginationRowModel,
   useTableInstance,
 } from '@tanstack/react-table'
+import { saveAs } from 'file-saver'
 
-import { createPersonPdfFile } from '../services/pdf'
-import { downloadPdfFiles } from '../services/zip'
+import { createPeoplePdfFile, createPersonPdfFile } from '../services/pdf'
+import { zipFiles} from '../services/zip'
 
 const table = createTable()
 
 export default function Home() {
   const [rowSelection, setRowSelection] = useState({})
+  const [asOneFile, setAsOneFile] = useState(false)
 
   const columns = useMemo(() => [
       table.createDisplayColumn({
@@ -98,10 +100,16 @@ export default function Home() {
       people.push(data[index])
     }
 
-    const personPdfFiles = people.map(person => createPersonPdfFile(person))
+    if (asOneFile) {
+      const { data, name } = createPeoplePdfFile(people)
+      saveAs(data, name )
+      return
+    }
 
-    await downloadPdfFiles(`People-${format(new Date(), 'yyyy-MM-dd_HH-mm')}`, personPdfFiles)
-  }, [data, rowSelection])
+    const personPdfFiles = people.map(person => createPersonPdfFile(person))
+    const zip = await zipFiles(personPdfFiles)
+    saveAs(zip, `People-${format(new Date(), 'yyyy-MM-dd_HH-mm')}`)
+  }, [asOneFile, data, rowSelection])
 
   return (
     <div className="p-4 flex flex-col gap-4">
@@ -135,10 +143,14 @@ export default function Home() {
           })}
         </tbody>
       </table>
-      <div>
+      <div className="flex gap-4 items-center">
         <button className="p-2 bg-gray-100 rounded" onClick={download}>
           Download PDF
         </button>
+        <label htmlFor="">
+          <input type="checkbox" checked={asOneFile} onChange={event => setAsOneFile(event.target.checked)} />
+          <span>As One File</span>
+        </label>
       </div>
     </div>
   );
