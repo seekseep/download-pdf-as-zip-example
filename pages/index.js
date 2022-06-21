@@ -13,6 +13,33 @@ import { zipFiles} from '../services/zip'
 
 const table = createTable()
 
+const NAMES = [
+  "Amanda Glover",
+  "Dale Shaw",
+  "Zachary McGuire",
+  "Gordon Wolfe",
+  "夏目漱石",
+]
+
+function getData (count = 100) {
+  const data = []
+  for (let i = 0; i < count; i++) {
+    data.push({
+      id: `p_${i+1}`,
+      name: NAMES[i % NAMES.length],
+      age: 20,
+      bio: i % 2 === 0 ? (
+        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur sunt officia dolorum recusandae temporibus dignissimos eveniet quam totam, odit, soluta nam commodi placeat fugiat voluptas doloribus quia nihil vero! Est."
+      ) : (
+        "智に働けば角が立つ情に棹させば流される"
+      )
+    })
+  }
+  return data
+}
+
+const defaultData = getData()
+
 export default function Home() {
   const [rowSelection, setRowSelection] = useState({})
   const [asOneFile, setAsOneFile] = useState(false)
@@ -63,23 +90,7 @@ export default function Home() {
     []
   )
 
-  const data = useMemo(() => [{
-    name: "Amanda Glover",
-    age: 60,
-    bio: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur sunt officia dolorum recusandae temporibus dignissimos eveniet quam totam, odit, soluta nam commodi placeat fugiat voluptas doloribus quia nihil vero! Est."
-  }, {
-    name: "Dale Shaw",
-    age: 29,
-    bio: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur sunt officia dolorum recusandae temporibus dignissimos eveniet quam totam, odit, soluta nam commodi placeat fugiat voluptas doloribus quia nihil vero! Est."
-  }, {
-    name: "Zachary McGuire",
-    age: 40,
-    bio: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur sunt officia dolorum recusandae temporibus dignissimos eveniet quam totam, odit, soluta nam commodi placeat fugiat voluptas doloribus quia nihil vero! Est."
-  }, {
-    name: "Gordon Wolfe",
-    age: 64,
-    bio: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Aspernatur sunt officia dolorum recusandae temporibus dignissimos eveniet quam totam, odit, soluta nam commodi placeat fugiat voluptas doloribus quia nihil vero! Est."
-  }], [])
+  const data = useMemo(() => defaultData, [])
 
   const instance = useTableInstance(table, {
     data,
@@ -102,7 +113,7 @@ export default function Home() {
 
     if (asOneFile) {
       const { data, name } = createPeoplePdfFile(people)
-      saveAs(data, name )
+      saveAs(data, name)
       return
     }
 
