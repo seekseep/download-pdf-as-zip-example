@@ -49,7 +49,7 @@ function setContentToDoc(doc, person) {
 
   doc.addImage(canvas, 'JPEG', 0, 0, width / rate, height / rate)
 
-  // canvas.remove()
+  canvas.remove()
 }
 
 function docToPdfBlob (doc) {
